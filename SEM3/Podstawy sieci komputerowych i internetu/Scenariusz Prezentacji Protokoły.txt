@@ -1,0 +1,84 @@
+## Scenariusz Prezentacji: Protokoły Warstwy Internetowej (Dla Początkujących)
+
+### 1. Wstęp: Gdzie jesteśmy i dlaczego to jest ważne? (5 minut) 🎬
+
+Szanowni Państwo, witam na prezentacji poświęconej fundamentom komunikacji w Internecie. Zajmiemy się dzisiaj **Warstwą Internetową** (nazywaną też Sieciową). Aby to lepiej zrozumieć, wyobraźmy sobie wysyłanie paczki:
+* **Wy** (Warstwa Aplikacji) piszecie treść listu.
+* **Biuro Transportowe** (Warstwa Transportu, np. TCP) dzieli ten list na mniejsze kawałki, numeruje je i wkłada do odpowiednich kopert.
+* **Urząd Pocztowy** (Warstwa Internetowa, nasz temat) nakleja adres, kod pocztowy, decyduje o najlepszej trasie i ładuje paczkę do transportu (pociągu, samolotu).
+* **Fizyczny Transport** (Warstwa Dostępu do Sieci) to kierowca czy listonosz, który dba o fizyczne dostarczenie.
+
+Naszym celem jest zrozumienie kluczowych protokołów Warstwy Internetowej: **IPv4**, **ICMP** oraz ściśle z nimi powiązanego **DHCP**.
+
+***
+
+### 2. IPv4: Adresy i Logistyka Danych (10 minut) 🗺️
+
+#### Co to jest IPv4?
+
+**Internet Protocol w wersji 4** (IPv4) to podstawowy system nadawania unikalnych adresów w sieci. To jest jak **kod pocztowy plus numer domu** dla każdego urządzenia podłączonego do Internetu (nazywanego **hostem**).
+
+#### Jak wygląda adres?
+
+Adres ma 32 bity, ale dla ułatwienia zapamiętania i używania, zapisujemy go w postaci **kropkowo-dziesiętnej**, na przykład: `192.168.1.1`. Ten adres pozwala na **jednoznaczną identyfikację** każdego hosta w sieci.
+
+#### Pakiet IP (Datagram)
+
+W Warstwie Internetowej dane nazywamy **pakietem** (lub datagramem). Kiedy dane schodzą z wyższej warstwy, IPv4 dodaje do nich swój **nagłówek**. Ten nagłówek działa jak **etykieta wysyłkowa** na paczce. Najważniejsze elementy nagłówka to:
+* **Adres Źródłowy IP** (skąd pakiet pochodzi).
+* **Adres Docelowy IP** (dokąd pakiet ma dotrzeć).
+
+#### Rola w Trasowaniu
+
+Główna rola IPv4 to **trasowanie**, czyli pomoc w znalezieniu optymalnej trasy dla pakietu. **Routery** – urządzenia pośredniczące – odczytują adres IP docelowy z nagłówka i na tej podstawie decydują, którym połączeniem (którą „drogą”) wysłać pakiet dalej, aby dotarł do celu.
+
+#### Ważna uwaga: Niezawodność (Unreliable)
+
+Kluczową cechą IPv4 jest to, że jest protokołem **„zawodnym”** (*unreliable*). Oznacza to, że sam protokół **nie ma obowiązku sprawdzać**, czy pakiet faktycznie dotarł do adresata, ani nie gwarantuje poprawnej kolejności. Po prostu robi wszystko, co może, aby go wysłać. Kontrolą dostarczenia i kolejnością zajmują się protokoły wyższych warstw (np. TCP).
+
+***
+
+### 3. DHCP: Automatyczne Uzyskiwanie Adresu (7 minut) ⚙️
+
+#### Jaki problem rozwiązuje DHCP?
+
+Gdyby nie **Dynamic Host Configuration Protocol** (DHCP), za każdym razem, gdy podłączasz nowe urządzenie (laptop, telefon) do sieci (domowej, firmowej, Wi-Fi), musiałbyś **ręcznie wpisać** adres IP, maskę podsieci i inne ustawienia. Byłoby to uciążliwe i podatne na błędy (np. wpisanie tego samego adresu, co inny komputer).
+
+#### Rola DHCP
+
+DHCP to usługa, która działa jak **automatyczny recepcjonista sieciowy**. Kiedy urządzenie się podłącza, wysyła prośbę, a serwer DHCP **automatycznie przypisuje mu wolny adres IP** (oraz całą niezbędną konfigurację) na określony czas. To sprawia, że Warstwa Internetowa (IPv4) może działać bez interwencji człowieka. Chociaż technicznie DHCP jest protokołem Warstwy Aplikacji, jest absolutnie fundamentalny dla Warstwy Internetowej.
+
+***
+
+### 4. ICMP: Diagnoza i Raportowanie Błędów (8 minut) 📢
+
+#### Co to jest ICMP?
+
+**Internet Control Message Protocol** (ICMP) jest protokołem ściśle towarzyszącym IPv4, działającym w tej samej Warstwie Internetowej. Pełni on rolę **systemu raportowania błędów** i **diagnostyki sieci**.
+
+#### Rola strażnika
+
+Ponieważ sam IPv4 jest protokołem zawodnym i nie przejmuje się, czy pakiet dotarł, to **ICMP jest strażnikiem**. Jego zadaniem **nie jest naprawianie problemów**, ale **zgłaszanie ich**. Informuje nadawcę, gdy pakiet nie mógł dotrzeć do celu, np. gdy nie ma łączności z siecią docelową.
+
+#### Komunikaty ICMP
+
+ICMP przesyła dwa główne typy komunikatów:
+1.  **Komunikaty o błędach**: Informują o poważnych problemach, np. „Host Niedostępny”, „Sieć Niedostępna” lub „Przekroczony Czas Życia Pakietu” (oznaczający, że pakiet krążył w sieci zbyt długo).
+2.  **Komunikaty sterujące**: Mają na celu poprawę efektywności. Najlepszym przykładem jest **„Tłumienie Źródła”** (*Source Quench*), który jest sygnałem dla komputera-nadawcy: **„Zwolnij! Jestem przeciążony i nie nadążam przetwarzać Twoich danych”**.
+
+#### Praktyczne użycie: PING
+
+Najbardziej znanym zastosowaniem ICMP jest narzędzie **`ping`**. Używa ono komunikatów ICMP (Echo Request i Echo Reply), aby sprawdzić, czy dany host jest dostępny i jak szybko odpowiada.
+
+***
+
+### 5. Podsumowanie: Logika Warstwy Internetowej (5 minut) 🤝
+
+Cała komunikacja w Warstwie Internetowej działa w logicznej współpracy:
+1.  **Adresowanie**: Urządzenie musi uzyskać swój **unikalny adres IP** – o to dba **DHCP**.
+2.  **Trasowanie**: Kiedy wysyłasz dane (pakiet), **IPv4** dodaje adresy IP, a routery wykorzystują je do **trasowania pakietu** do celu.
+3.  **Raportowanie**: Jeśli podczas tej podróży wystąpi problem (np. pakiet nie może trafić do docelowej sieci), **ICMP** generuje komunikat, informując nadawcę o błędzie.
+
+Protokoły te są „sercem” Internetu – bez nich adresowanie i wysyłanie danych poza lokalną sieć byłoby niemożliwe.
+
+Dziękuję za uwagę i zapraszam do zadawania pytań.
